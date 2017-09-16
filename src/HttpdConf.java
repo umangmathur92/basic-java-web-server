@@ -2,9 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 public class HttpdConf {
 
@@ -23,8 +21,8 @@ public class HttpdConf {
     private String logFile;
     private String directoryIndex;
     private String accessFileName;
-    private HashMap<String,String> aliases = new HashMap<String, String>();
-    private HashMap<String,String> scriptAliases = new HashMap<String, String>();
+    private HashMap<String,String> aliasesMap = new HashMap<>();
+    private HashMap<String,String> scriptAliasesMap = new HashMap<>();
 
     public HttpdConf(String filePathStr) throws IOException {
         Path filePath = Paths.get(filePathStr);
@@ -32,15 +30,15 @@ public class HttpdConf {
         parseInputStrAndSetAttributes(httpdConfStr);
     }
 
-    public HttpdConf(String serverRoot, String documentRoot, int listenPort, String logFile, String directoryIndex, String accessFileName, HashMap<String, String> aliases, HashMap<String, String> scriptAliases) {
+    public HttpdConf(String serverRoot, String documentRoot, int listenPort, String logFile, String directoryIndex, String accessFileName, HashMap<String, String> aliasesMap, HashMap<String, String> scriptAliasesMap) {
         this.serverRoot = serverRoot;
         this.documentRoot = documentRoot;
         this.listenPort = listenPort;
         this.logFile = logFile;
         this.directoryIndex = directoryIndex;
         this.accessFileName = accessFileName;
-        this.aliases = aliases;
-        this.scriptAliases = scriptAliases;
+        this.aliasesMap = aliasesMap;
+        this.scriptAliasesMap = scriptAliasesMap;
     }
 
     public String getServerRoot() {
@@ -67,43 +65,42 @@ public class HttpdConf {
         return accessFileName;
     }
 
-    public HashMap<String, String> getAliases() {
-        return aliases;
+    public HashMap<String, String> getAliasesMap() {
+        return aliasesMap;
     }
 
-    public HashMap<String, String> getScriptAliases() {
-        return scriptAliases;
+    public HashMap<String, String> getScriptAliasesMap() {
+        return scriptAliasesMap;
     }
 
     private void parseInputStrAndSetAttributes(String httpdConfStr) {
-        List<String> configStrList = Arrays.asList(httpdConfStr.split("\n"));
-        for (String configLineStr: configStrList) {
+        String[] configLinesArr = httpdConfStr.split("\n");
+        for (String configLineStr: configLinesArr) {
             String[] str = configLineStr.split(" ");
-            List<String> lst = Arrays.asList(configLineStr.split(" "));
-            switch (lst.get(0)) {
+            switch (str[0]) {
                 case SERVER_ROOT:
-                    serverRoot = remQuotesFromStr(lst.get(1));
+                    serverRoot = remQuotesFromStr(str[1]);
                     break;
                 case DOCUMENT_ROOT:
-                    documentRoot = remQuotesFromStr(lst.get(1));
+                    documentRoot = remQuotesFromStr(str[1]);
                     break;
                 case LISTEN:
-                    listenPort = Integer.parseInt(lst.get(1));
+                    listenPort = Integer.parseInt(str[1]);
                     break;
                 case LOG_FILE:
-                    logFile = remQuotesFromStr(lst.get(1));
+                    logFile = remQuotesFromStr(str[1]);
                     break;
                 case SCRIPT_ALIAS:
-                    scriptAliases.put(lst.get(1), remQuotesFromStr(lst.get(2)));
+                    scriptAliasesMap.put(str[1], remQuotesFromStr(str[2]));
                     break;
                 case ALIAS:
-                    aliases.put(str[1], remQuotesFromStr(lst.get(2)));
+                    aliasesMap.put(str[1], remQuotesFromStr(str[2]));
                     break;
                 case DIRECTORY_INDEX:
-                    directoryIndex = remQuotesFromStr(lst.get(1));
+                    directoryIndex = remQuotesFromStr(str[1]);
                     break;
                 case ACCESS_FILE_NAME:
-                    accessFileName  = remQuotesFromStr(lst.get(1));
+                    accessFileName  = remQuotesFromStr(str[1]);
                     break;
             }
         }
@@ -122,8 +119,9 @@ public class HttpdConf {
                 ", logFile='" + logFile + '\'' +
                 ", directoryIndex='" + directoryIndex + '\'' +
                 ", accessFileName='" + accessFileName + '\'' +
-                ", aliases=" + aliases +
-                ", scriptAliases=" + scriptAliases +
+                ", aliasesMap=" + aliasesMap +
+                ", scriptAliasesMap=" + scriptAliasesMap +
                 '}';
     }
+
 }
