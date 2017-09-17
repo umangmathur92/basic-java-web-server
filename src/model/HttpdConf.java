@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class HttpdConf {
 
@@ -23,8 +24,8 @@ public class HttpdConf {
     private String logFile;
     private String directoryIndex;
     private String accessFileName;
-    private HashMap<String,String> aliasesMap = new HashMap<>();
-    private HashMap<String,String> scriptAliasesMap = new HashMap<>();
+    private HashMap<String,String> aliasesMap = new LinkedHashMap<>();
+    private HashMap<String,String> scriptAliasesMap = new LinkedHashMap<>();
 
     public HttpdConf(String filePathStr) throws IOException {
         Path filePath = Paths.get(filePathStr);
