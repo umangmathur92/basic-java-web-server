@@ -7,7 +7,7 @@ import java.net.Socket;
 
 public class WebServer {
 
-    public static final int PORT_NUMBER = 8080;
+    public static final int PORT_NUMBER = 7000;
 
     public static void main(String[] args) {
         try {

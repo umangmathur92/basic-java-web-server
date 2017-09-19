@@ -531,7 +531,7 @@ text/html			html htm
 text/parityfec
 text/plain			asc txt
 text/prs.lines.tag
-text/rfc822-headers
+text/rfc822-headersMap
 text/richtext			rtx
 text/rtf			rtf
 text/sgml			sgml sgm

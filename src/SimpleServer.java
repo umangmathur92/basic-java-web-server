@@ -27,7 +27,7 @@ public class SimpleServer {
             ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
             Socket clientSocket = serverSocket.accept();
             PrintWriter outputPrintWriter = new PrintWriter(clientSocket.getOutputStream(), true);//OutputStream
-            BufferedReader bufferedInputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));//InputStream
+            BufferedReader bufferedInputReader = new BufferedReader(new server.ZInputStreamReader(clientSocket.getInputStream()));//InputStream
             utilities.Util.print("Client connected on port: " + PORT_NUMBER);
             String inputLine;
             while ((inputLine = bufferedInputReader.readLine()) != null) {
