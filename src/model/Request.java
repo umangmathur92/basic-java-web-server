@@ -1,6 +1,10 @@
 package model;
 
-import java.util.Arrays;
+import utilities.Util;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -26,38 +30,38 @@ public class Request {
         this.body = body;
     }
 
-/*
-    public Request(String completeRequestPacketStr) {
-        parseRequestStr(completeRequestPacketStr);
-    }
-
-    private void parseRequestStr(String completeRequestPacketStr) {
-        String[] strings = completeRequestPacketStr.split("\n");
-        for (int i = 0; i < strings.length; i++){
-            String strLine = strings[i];
-            String[] stringArr;
-            if (i==0) {
-                stringArr = strLine.split(" ");
-                this.verb = stringArr[0];
-                this.uri = stringArr[1];
-                this.httpVersion = stringArr[2];
-            } else if (strLine.contains(":")){
-                stringArr = strLine.split(":");
-                String key = stringArr[0].trim();
-                String value = stringArr[1].trim();
+    public Request(Socket socket) {
+        try {
+            BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
+            String firstLine = Util.readRawLineToStr(in);
+            Util.print(firstLine);
+            String[] variables = firstLine.split(" ");
+            this.verb = variables[0];
+            this.uri = variables[1];
+            this.httpVersion = variables[2];
+            String str = Util.readRawLineToStr(in);
+            Util.print(str);
+            while (str.length() > 0) {
+                String[] keyValStrArr = str.split(":");
+                String key = keyValStrArr[0].trim();
+                String value = keyValStrArr[1].trim();
                 this.headersMap.put(key, value);
+                str = Util.readRawLineToStr(in);
+                Util.print(str);
             }
-        }
-        if (headersMap.containsKey("Content-Length")) {
-            int contentLength = Integer.parseInt(headersMap.get("Content-Length"));
-            int completeReqPacketLength = completeRequestPacketStr.length();
-
-            String bodyStr = completeRequestPacketStr.substring(completeReqPacketLength - contentLength);
-
-
+            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+            String contentLength;
+            if ((contentLength = headersMap.get("Content-Length")) != null) {
+                for (int i = 0; i < Integer.parseInt(contentLength); i++) {
+                    buf.write(in.read());
+                }
+            }
+            this.body = buf.toByteArray();
+            Util.print(new String(body));
+        }catch (Exception e) {
+            e.printStackTrace();
         }
     }
-*/
 
     public String getUri() {
         return uri;
@@ -110,7 +114,7 @@ public class Request {
                 ", verb='" + verb + '\'' +
                 ", httpVersion='" + httpVersion + '\'' +
                 ", headersMap=" + headersMap +
-                ", body=" + Arrays.toString(body) +
+                ", body=" + new String(body) +
                 '}';
     }
 }
