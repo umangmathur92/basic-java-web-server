@@ -21,6 +21,7 @@ public class Request {
     private String httpVersion;
     private HashMap<String, String> headersMap = new LinkedHashMap<>();
     private byte[] body;
+    private String queryString;
 
     public Request(String uri, String verb, String httpVersion, HashMap<String, String> headersMap, byte[] body) {
         this.uri = uri;
@@ -39,6 +40,10 @@ public class Request {
             this.verb = variables[0];
             this.uri = variables[1];
             this.httpVersion = variables[2];
+            if (uri.contains("?")) {
+                this.uri = variables[1].substring(0, variables[1].indexOf("?"));
+                this.queryString = variables[1].substring(variables[1].indexOf("?") + 1);
+            }
             String str = Util.readRawLineToStr(in);
             Util.print(str);
             while (str.length() > 0) {
@@ -103,8 +108,12 @@ public class Request {
         this.body = body;
     }
 
-    private void parse() {
+    public String getQueryString() {
+        return queryString;
+    }
 
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
     }
 
     @Override
@@ -117,4 +126,19 @@ public class Request {
                 ", body=" + new String(body) +
                 '}';
     }
+
+    public boolean isValid() {
+        boolean isValid = false;
+        switch (verb) {
+            case TYPE_GET:
+            case TYPE_PUT:
+            case TYPE_POST:
+            case TYPE_DELETE:
+            case TYPE_HEAD:
+                isValid = true;
+                break;
+        }
+        return isValid;
+    }
+
 }

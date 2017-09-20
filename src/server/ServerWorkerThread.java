@@ -1,17 +1,22 @@
 package server;
 
-import model.Request;
+import model.*;
 import utilities.Util;
 
-import java.io.PrintWriter;
 import java.net.Socket;
+
+import static model.Request.*;
 
 class ServerWorkerThread extends Thread {
 
     private Socket socket;
+    private HttpdConf httpdConf;
+    private MimeTypes mimeTypeConf;
 
-    public ServerWorkerThread(Socket socket) {
+    public ServerWorkerThread(Socket socket, HttpdConf httpdConf, MimeTypes mimeTypeConf) {
         this.socket=socket;
+        this.httpdConf = httpdConf;
+        this.mimeTypeConf = mimeTypeConf;
     }
 
     @Override
@@ -19,9 +24,10 @@ class ServerWorkerThread extends Thread {
         try {
             Request request = new Request(socket);
             Util.print(request.toString());
-            PrintWriter outputPrintWriter = new PrintWriter(socket.getOutputStream(), true);//OutputStream
-            outputPrintWriter.println("HTTP/1.1 200 Success\r\n" + "Content-type: text/html\r\n\r\n" + "<html><head></head><body>This is the HTML body</body></html>\n");
-            outputPrintWriter.close();
+            Resource resource = new Resource(request.getUri(), httpdConf, mimeTypeConf);
+            Response response = ResponseFactory.getResponse(request, resource);
+            response.sendResponse(socket);
+            socket.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

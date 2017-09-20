@@ -53,4 +53,12 @@ public class MimeTypes {
                 '}';
     }
 
+    public String lookup (String extension){
+        String type = mimeTypeMap.get(extension);
+        if(type==null){
+            return "text/text";
+        }
+        return mimeTypeMap.get(extension);
+    }
+
 }

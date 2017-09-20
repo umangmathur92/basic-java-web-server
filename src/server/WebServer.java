@@ -1,5 +1,7 @@
 package server;
 
+import model.HttpdConf;
+import model.MimeTypes;
 import utilities.Util;
 
 import java.net.ServerSocket;
@@ -13,8 +15,10 @@ public class WebServer {
         try {
             ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
             while (true) {
+                HttpdConf httpdConf = new HttpdConf("config/httpd.conf");
+                MimeTypes mimeTypeConf = new MimeTypes("config/mime.types");
                 Socket socket = serverSocket.accept();
-                ServerWorkerThread serverWorkerThread = new ServerWorkerThread(socket);
+                ServerWorkerThread serverWorkerThread = new ServerWorkerThread(socket, httpdConf, mimeTypeConf);
                 serverWorkerThread.start();//This causes the 'run()' method to be executed
 
                 Thread t = new Thread();
