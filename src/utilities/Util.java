@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Util {
 
@@ -29,6 +32,11 @@ public class Util {
     public static String readRawLineToStr(InputStream inputStream) throws IOException {
         byte[] bytes = readRawLine(inputStream);
         return new String(bytes, StandardCharsets.UTF_8).replaceAll("\\r","").replaceAll("\\n","");
+    }
+
+    public static String getFormattedDate(Date date){
+        DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
+        return formatter.format(date);
     }
 
 }

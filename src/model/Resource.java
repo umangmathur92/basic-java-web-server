@@ -1,5 +1,10 @@
 package model;
 
+import model.HtAccess;
+import model.HttpdConf;
+import model.MimeTypes;
+import model.Request;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -43,11 +48,9 @@ public class Resource {
     public void setHtAccess(HtAccess htAccess) {
         this.htAccess = htAccess;
     }
-
     public MimeTypes getMimeTypes() {
         return mimeTypes;
     }
-
     public void setMimeTypes(MimeTypes mimeTypes) {
         this.mimeTypes = mimeTypes;
     }
@@ -77,7 +80,7 @@ public class Resource {
                 modifiedUri = uri.replace(scriptAliasKey, actualScriptPath);
             }
         }
-        //append doc root path
+        //append document root path
         if(!modifiedUri.contains(config.getDocumentRoot())) {
             modifiedUri = config.getDocumentRoot()+ modifiedUri;
         }
@@ -108,7 +111,7 @@ public class Resource {
     public boolean isModified(Request request) throws ParseException {
         String modifiedSinceHeader = request.getHeadersMap().get("If-Modified-Since");
         DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-        Date modifiedSinceDate = (Date)formatter.parse(modifiedSinceHeader);
+        Date modifiedSinceDate = formatter.parse(modifiedSinceHeader);
         File resource = new File(modifiedUri);
         Date lastModified = new Date(resource.lastModified());
         Calendar calender = Calendar.getInstance();

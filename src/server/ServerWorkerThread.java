@@ -1,11 +1,12 @@
 package server;
 
 import model.*;
+import model.Resource;
+import model.responses.Response;
+import model.responses.ResponseFactory;
 import utilities.Util;
 
 import java.net.Socket;
-
-import static model.Request.*;
 
 class ServerWorkerThread extends Thread {
 
@@ -32,6 +33,5 @@ class ServerWorkerThread extends Thread {
             e.printStackTrace();
         }
     }
-
 
 }
