@@ -47,7 +47,7 @@ public class Request {
             String str = Util.readRawLineToStr(in);
             Util.print(str);
             while (str.length() > 0) {
-                String[] keyValStrArr = str.split(":");
+                String[] keyValStrArr = str.split(": ");
                 String key = keyValStrArr[0].trim();
                 String value = keyValStrArr[1].trim();
                 this.headersMap.put(key, value);

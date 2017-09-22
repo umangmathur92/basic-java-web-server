@@ -1,19 +1,6 @@
 package model;
 
-import model.HtAccess;
-import model.HttpdConf;
-import model.MimeTypes;
-import model.Request;
-
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 public class Resource {
@@ -21,7 +8,6 @@ public class Resource {
     private String modifiedUri;
     private String uri;
     private HttpdConf httpdConf;
-    private HtAccess htAccess;
     private MimeTypes mimeTypes;
 
     public String getModifiedUri() {
@@ -41,12 +27,6 @@ public class Resource {
     }
     public void setHttpdConf(HttpdConf httpdConf) {
         this.httpdConf = httpdConf;
-    }
-    public HtAccess getHtAccess() {
-        return htAccess;
-    }
-    public void setHtAccess(HtAccess htAccess) {
-        this.htAccess = htAccess;
     }
     public MimeTypes getMimeTypes() {
         return mimeTypes;
@@ -88,68 +68,6 @@ public class Resource {
         if (File.separator.equals(modifiedUri.substring(modifiedUri.length()-1))) {
             modifiedUri = modifiedUri + "index.html";
         }
-    }
-
-    public boolean isAuthorized(Request request){
-        return request.getHeadersMap().containsKey("Authorization");
-    }
-
-    public boolean isProtected() throws IOException{
-        String parentPath = new File(modifiedUri).getParent();
-        File temp = null;
-        while ((temp = new File(parentPath)).getParent()!= null) {
-            if(new File(temp.getAbsolutePath() + File.separator+".htAccess").exists()){
-                htAccess = new HtAccess();
-                htAccess.parse(temp.getAbsolutePath());
-                return true;
-            }
-            parentPath = temp.getParent();
-        }
-        return false;
-    }
-
-    public boolean isModified(Request request) throws ParseException {
-        String modifiedSinceHeader = request.getHeadersMap().get("If-Modified-Since");
-        DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-        Date modifiedSinceDate = formatter.parse(modifiedSinceHeader);
-        File resource = new File(modifiedUri);
-        Date lastModified = new Date(resource.lastModified());
-        Calendar calender = Calendar.getInstance();
-        calender.setTime(modifiedSinceDate);
-        calender.set(Calendar.MILLISECOND, 0);
-        lastModified = calender.getTime();
-        return lastModified.after(modifiedSinceDate);
-    }
-
-    public void createFile(Request request) throws IOException {
-        File file = new File(modifiedUri);
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdir();
-        }
-        if(!file.exists()){
-            file.createNewFile();
-        }
-        FileWriter writer = new FileWriter(modifiedUri);
-        BufferedWriter bufferedWriter = new BufferedWriter(writer);
-        bufferedWriter.write(new String(request.getBody()));
-        bufferedWriter.close();
-    }
-
-    public boolean deleteFile(Request request) {
-        File file = new File(modifiedUri);
-        if(file.isDirectory()) {
-            return false;
-        }
-        return file.delete();
-    }
-
-    public boolean isScript(){
-        for (String currentKey : httpdConf.getScriptAliasesMap().keySet()) {
-            if (uri.contains(currentKey)) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }
