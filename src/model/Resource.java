@@ -1,6 +1,9 @@
 package model;
 
+import utilities.Util;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 public class Resource {
@@ -68,6 +71,10 @@ public class Resource {
         if (File.separator.equals(modifiedUri.substring(modifiedUri.length()-1))) {
             modifiedUri = modifiedUri + "index.html";
         }
+    }
+
+    public void createFile(Request request) throws IOException {
+        Util.createFile(modifiedUri, request.getBody());
     }
 
 }

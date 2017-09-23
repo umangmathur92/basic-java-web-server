@@ -1,8 +1,6 @@
 package utilities;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,6 +35,19 @@ public class Util {
     public static String getFormattedDate(Date date){
         DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
         return formatter.format(date);
+    }
+
+    public static void createFile(String fileUriStr, byte[] fileContentByteArr) throws IOException {
+        File file = new File(fileUriStr);
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdir();
+        }
+        if(!file.exists()){
+            file.createNewFile();
+        }
+        OutputStream outputStream = new FileOutputStream(file);
+        outputStream.write(fileContentByteArr);
+        outputStream.close();
     }
 
 }

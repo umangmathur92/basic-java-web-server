@@ -5,6 +5,7 @@ import utilities.Util;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -123,7 +124,7 @@ public class Request {
                 ", verb='" + verb + '\'' +
                 ", httpVersion='" + httpVersion + '\'' +
                 ", headersMap=" + headersMap +
-                ", body=" + new String(body) +
+                ", body=" + Arrays.toString(body) +
                 '}';
     }
 

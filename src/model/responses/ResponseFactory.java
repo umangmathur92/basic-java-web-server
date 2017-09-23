@@ -14,6 +14,11 @@ public class ResponseFactory {
 
     public static Response getResponse(Request request, Resource resource) throws IOException, NoSuchAlgorithmException, ParseException, InterruptedException {
 
+        if(request.getVerb().equals("PUT")) {
+            resource.createFile(request);
+            return new CreatedResponse(request.getBody().length);
+        }
+
         return new OkResponse(resource);
     }
 
