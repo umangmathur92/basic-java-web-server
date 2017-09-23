@@ -19,13 +19,8 @@ public class WebServer {
                 ServerWorkerThread serverWorkerThread = new ServerWorkerThread(socket, httpdConf, mimeTypeConf);
                 serverWorkerThread.start();//This causes the 'run()' method to be executed
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Util.print("Exception: " + e.getMessage());
         }
     }
-
 }
-
-
-
