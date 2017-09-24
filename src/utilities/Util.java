@@ -37,17 +37,32 @@ public class Util {
         return formatter.format(date);
     }
 
-    public static void createFile(String fileUriStr, byte[] fileContentByteArr) throws IOException {
+    public static boolean createFile(String fileUriStr, byte[] fileContentByteArr) throws IOException {
         File file = new File(fileUriStr);
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdir();
-        }
+        /*if (!file.getParentFile().exists()) {
+            boolean parentDirCreated = file.getParentFile().mkdir();
+            if (!parentDirCreated) {
+                return false;
+            }
+        }*/
         if(!file.exists()){
-            file.createNewFile();
+            boolean newFileCreated = file.createNewFile();
+            if (!newFileCreated) {
+                return false;
+            }
         }
         OutputStream outputStream = new FileOutputStream(file);
         outputStream.write(fileContentByteArr);
         outputStream.close();
+        return true;
+    }
+
+    public static boolean deleteFile(String modifiedUri) {
+        File file = new File(modifiedUri);
+        if(file.isDirectory()) {
+            return false;
+        }
+        return file.delete();
     }
 
 }

@@ -10,16 +10,44 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static model.Request.*;
+
 public class ResponseFactory {
 
-    public static Response getResponse(Request request, Resource resource) throws IOException, NoSuchAlgorithmException, ParseException, InterruptedException {
-
-        if(request.getVerb().equals("PUT")) {
-            resource.createFile(request);
-            return new CreatedResponse(request.getBody().length);
+    public static Response getResponse(Request request, Resource resource) throws Exception {
+        String verb = request.getVerb();
+        switch (verb) {
+            case TYPE_GET:
+                boolean resourceExists = resource.isExist();
+                if (!resourceExists) {
+                    return new NotFoundResponse(resource);
+                }
+                boolean containsFileModifDateHeader = request.getHeadersMap().containsKey("If-Modified-Since");
+                boolean isResourceModified = containsFileModifDateHeader && resource.isModifiedSince(request);
+                return isResourceModified ? new OkResponse(resource, true) : new NotModifiedResponse();
+            case TYPE_PUT:
+                boolean resFileCreated = resource.createFile(request);
+                return resFileCreated ? new CreatedResponse(resource) : new InternalServerErrorResponse();
+            case TYPE_POST:
+                return new OkResponse(resource, true);
+            case TYPE_DELETE:
+                boolean rescExists = resource.isExist();
+                if (!rescExists) {
+                    return new NotFoundResponse(resource);
+                }
+                boolean deleteFileSuccessfully = resource.deleteFile(request);
+                return deleteFileSuccessfully? new NoContentResponse() : new NotFoundResponse(resource);
+            case TYPE_HEAD:
+                boolean resExists = resource.isExist();
+                if (!resExists) {
+                    return new NotFoundResponse(resource);
+                }
+                boolean hasFileModifDateHeader = request.getHeadersMap().containsKey("If-Modified-Since");
+                boolean isResModified = hasFileModifDateHeader && resource.isModifiedSince(request);
+                return isResModified ? new OkResponse(resource, false) : new NotModifiedResponse();
+            default:
+                return new BadRequestResponse();
         }
-
-        return new OkResponse(resource);
     }
 
     private static String executeScript(Resource resource, Request request) throws InterruptedException,IOException {

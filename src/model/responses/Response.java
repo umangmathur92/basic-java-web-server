@@ -14,7 +14,7 @@ public class Response {
 
     private int httpStatusCode;
     private String httpStatus;
-    private Map<String,String> headersMap = new LinkedHashMap<>();
+    private HashMap<String,String> headersMap = new LinkedHashMap<>();
     private byte[] responseBody;
 
     public byte[] getResponseBody() {
@@ -38,7 +38,7 @@ public class Response {
     public Map<String, String> getHeadersMap() {
         return headersMap;
     }
-    public void setHeadersMap(Map<String, String> headersMap) {
+    public void setHeadersMap(HashMap<String, String> headersMap) {
         this.headersMap = headersMap;
     }
 

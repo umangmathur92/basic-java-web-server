@@ -32,7 +32,7 @@ public class LogFile {
     public synchronized void write(Request request, Response response, Socket client) throws IOException {
 
         File logFile;
-        logFile = new File("/Users/vipulkaranjkar/IdeaProjects/web-server-umangmathur_vipulkaranjkar/logs/log.txt");
+        logFile = new File(filePath);
 
         if (!logFile.exists()) {
             logFile.createNewFile();

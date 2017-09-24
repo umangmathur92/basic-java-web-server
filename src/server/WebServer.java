@@ -11,7 +11,7 @@ public class WebServer {
 
     public static void main(String[] args) {
         try {
-            HttpdConf httpdConf = new HttpdConf("config/httpd.conf");
+            HttpdConf httpdConf = new HttpdConf("config/httpd2.conf");
             MimeTypes mimeTypeConf = new MimeTypes("config/mime.types");
             ServerSocket serverSocket = new ServerSocket(httpdConf.getListenPort());
             while (true) {

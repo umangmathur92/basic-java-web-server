@@ -4,6 +4,11 @@ import utilities.Util;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Resource {
@@ -73,8 +78,28 @@ public class Resource {
         }
     }
 
-    public void createFile(Request request) throws IOException {
-        Util.createFile(modifiedUri, request.getBody());
+    public boolean isExist() {
+        File file=new File(modifiedUri);
+        return file.exists();
+    }
+
+    public boolean createFile(Request request) throws IOException {
+        return Util.createFile(modifiedUri, request.getBody());
+    }
+
+    public boolean deleteFile(Request request) {
+        return Util.deleteFile(modifiedUri);
+    }
+
+    public boolean isModifiedSince(Request request) throws ParseException {
+        String modifiedSinceHeader = request.getHeadersMap().get("If-Modified-Since");
+        DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+        Date modifiedSinceDate = formatter.parse(modifiedSinceHeader);
+        Calendar calender = Calendar.getInstance();
+        calender.setTime(modifiedSinceDate);
+        calender.set(Calendar.MILLISECOND, 0);
+        Date lastModified = calender.getTime();
+        return lastModified.after(modifiedSinceDate);
     }
 
 }
