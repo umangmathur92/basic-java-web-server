@@ -49,17 +49,7 @@ public class Response {
         headersMap.put("Date", Util.getFormattedDate(new Date()));
         headersMap.put("Server", "My Server");
         headersMap.put("Connection", "Closed");
-
-        if (resource.isExist()) {
-            byte[] fileContents = resource.fetchResourceFileData();
-
-        }
-
-        headersMap.put("Content-Length", fileContents.length + "");
-        headersMap.put("Last-Modified", Util.getFormattedDate(new Date(resFile.lastModified())));
         headersMap.put("Cache-Control", "max-age=" + 2000);
-
-
         if(headersMap != null){
             responseStr.append(getHeaderStrFromMap(headersMap));
         }
@@ -76,12 +66,15 @@ public class Response {
         }
     }
 
+    private void SetHeadersFromResFileAttrs(File resFile, byte[] fileContents) {
+        headersMap.put("Content-Length", fileContents.length + "");
+        headersMap.put("Last-Modified", Util.getFormattedDate(new Date(resFile.lastModified())));
+    }
+
     public byte[] fetchFileData(File resFile) throws IOException{
         Path filePath = Paths.get(resFile.getAbsolutePath());
         byte[] fileContents = Files.readAllBytes(filePath);
-        /*headersMap.put("Content-Length", fileContents.length + "");
-        headersMap.put("Last-Modified", Util.getFormattedDate(new Date(resFile.lastModified())));
-        headersMap.put("Cache-Control", "max-age=" + 2000);*/
+        SetHeadersFromResFileAttrs(resFile, fileContents);
         return fileContents;
     }
 
