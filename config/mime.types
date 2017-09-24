@@ -4,7 +4,7 @@
 # given file extension(s).  Sending the correct media type to the client
 # is important so they know how to handle the content of the file.
 # Extra types can either be added here or by using an AddType directive
-# in your httpdConf files. For more information about Internet media types,
+# in your config files. For more information about Internet media types,
 # please read RFC 2045, 2046, 2047, 2048, and 2077.  The Internet media type
 # registry is at <http://www.iana.org/assignments/media-types/>.
 
@@ -39,6 +39,7 @@ application/index.vnd
 application/iotp
 application/ipp
 application/isup
+application/json json
 application/mac-binhex40	hqx
 application/mac-compactpro	cpt
 application/macwriteii
@@ -531,7 +532,7 @@ text/html			html htm
 text/parityfec
 text/plain			asc txt
 text/prs.lines.tag
-text/rfc822-headersMap
+text/rfc822-headers
 text/richtext			rtx
 text/rtf			rtf
 text/sgml			sgml sgm
@@ -589,3 +590,4 @@ video/vnd.vivo
 video/x-msvideo			avi
 video/x-sgi-movie		movie
 x-conference/x-cooltalk		ice
+application/json json

@@ -26,14 +26,16 @@ class ServerWorkerThread extends Thread {
     @Override
     public void run() {
         try {
-            Request request = new Request(socket);
-            Util.print(request.toString());
-            Resource resource = new Resource(request.getUri(), httpdConf, mimeTypeConf);
-            Response response = ResponseFactory.getResponse(request, resource);
-            response.sendResponse(socket);
-            LogFile logFile = new LogFile(httpdConf.getLogFile());
-            logFile.write(request, response, socket);
-            socket.close();
+            if (socket != null) {
+                Request request = new Request(socket);
+                Util.print(request.toString());
+                Resource resource = new Resource(request.getUri(), httpdConf, mimeTypeConf);
+                Response response = ResponseFactory.getResponse(request, resource);
+                response.sendResponse(socket, resource);
+                LogFile logFile = new LogFile(httpdConf.getLogFile());
+                logFile.write(request, response, socket);
+                socket.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

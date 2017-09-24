@@ -10,23 +10,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import static model.Request.*;
 
 public class ResponseFactory {
 
-    public static Response getResponse(Request request, Resource resource) throws IOException, NoSuchAlgorithmException, ParseException, InterruptedException {
-
-//        return new OkResponse(resource);
+    public static Response getResponse(Request request, Resource resource) throws Exception {
+        String verb = request.getVerb();
 
         if (resource.isProtected()) {
 
@@ -40,8 +30,41 @@ public class ResponseFactory {
                 return new ForbiddenAccessReponse(resource);
             }
         }
-        return new OkResponse(resource);
 
+        switch (verb) {
+            case TYPE_GET:
+                if (!resource.isExist()) {
+                    return new NotFoundResponse(resource);
+                }
+                if (request.getHeadersMap().containsKey("If-Modified-Since")) {
+                    return resource.isModifiedSince(request) ? new OkResponse(resource, true) : new NotModifiedResponse(resource);
+                }
+                return new OkResponse(resource, true);
+            case TYPE_PUT:
+                boolean resFileCreated = resource.createFile(request);
+                return resFileCreated ? new CreatedResponse(resource) : new InternalServerErrorResponse();
+            case TYPE_POST:
+                if (!resource.isExist()) {
+                    return new NotFoundResponse(resource);
+                }
+                return new OkResponse(resource, true);
+            case TYPE_DELETE:
+                if (!resource.isExist()) {
+                    return new NotFoundResponse(resource);
+                }
+                boolean deleteFileSuccessfully = resource.deleteFile(request);
+                return deleteFileSuccessfully ? new NoContentResponse() : new NotFoundResponse(resource);
+            case TYPE_HEAD:
+                if (!resource.isExist()) {
+                    return new NotFoundResponse(resource);
+                }
+                if (request.getHeadersMap().containsKey("If-Modified-Since")) {
+                    return resource.isModifiedSince(request) ? new OkResponse(resource, false) : new NotModifiedResponse(resource);
+                }
+                return new OkResponse(resource, false);
+            default:
+                return new BadRequestResponse();
+        }
     }
 
     private static String executeScript(Resource resource, Request request) throws InterruptedException, IOException {

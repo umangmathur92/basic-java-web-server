@@ -1,5 +1,6 @@
 package model.responses;
 
+import model.Resource;
 import utilities.Util;
 
 import java.io.File;
@@ -14,7 +15,7 @@ public class Response {
 
     private int httpStatusCode;
     private String httpStatus;
-    private Map<String,String> headersMap = new LinkedHashMap<>();
+    private HashMap<String,String> headersMap = new LinkedHashMap<>();
     private byte[] responseBody;
 
     public byte[] getResponseBody() {
@@ -38,16 +39,17 @@ public class Response {
     public Map<String, String> getHeadersMap() {
         return headersMap;
     }
-    public void setHeadersMap(Map<String, String> headersMap) {
+    public void setHeadersMap(HashMap<String, String> headersMap) {
         this.headersMap = headersMap;
     }
 
-    public void sendResponse(Socket socket) throws IOException{
+    public void sendResponse(Socket socket, Resource resource) throws IOException{
         StringBuilder responseStr = new StringBuilder();
         responseStr.append("HTTP/1.1 ").append(httpStatusCode).append(" ").append(httpStatus).append("\r\n");
         headersMap.put("Date", Util.getFormattedDate(new Date()));
         headersMap.put("Server", "My Server");
         headersMap.put("Connection", "Closed");
+        headersMap.put("Cache-Control", "max-age=" + 2000);
         if(headersMap != null){
             responseStr.append(getHeaderStrFromMap(headersMap));
         }
@@ -64,12 +66,15 @@ public class Response {
         }
     }
 
-    public byte[] fetchFileMetaData(File resFile) throws IOException{
-        Path filePath = Paths.get(resFile.getAbsolutePath());
-        byte[] fileContents = Files.readAllBytes(filePath);
+    private void SetHeadersFromResFileAttrs(File resFile, byte[] fileContents) {
         headersMap.put("Content-Length", fileContents.length + "");
         headersMap.put("Last-Modified", Util.getFormattedDate(new Date(resFile.lastModified())));
-        headersMap.put("Cache-Control", "max-age=" + 2000);
+    }
+
+    public byte[] fetchFileData(File resFile) throws IOException{
+        Path filePath = Paths.get(resFile.getAbsolutePath());
+        byte[] fileContents = Files.readAllBytes(filePath);
+        SetHeadersFromResFileAttrs(resFile, fileContents);
         return fileContents;
     }
 
