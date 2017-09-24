@@ -1,6 +1,7 @@
 package model;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 public class Resource {
@@ -9,6 +10,7 @@ public class Resource {
     private String uri;
     private HttpdConf httpdConf;
     private MimeTypes mimeTypes;
+    private HtAccess htaccess;
 
     public String getModifiedUri() {
         return modifiedUri;
@@ -33,6 +35,12 @@ public class Resource {
     }
     public void setMimeTypes(MimeTypes mimeTypes) {
         this.mimeTypes = mimeTypes;
+    }
+    public HtAccess getHtAccess() {
+        return htaccess;
+    }
+    public void setHtAccess(HtAccess htaccess) {
+        this.htaccess = htaccess;
     }
 
     public Resource(String uri, HttpdConf httpdConf, MimeTypes mimeTypes) {
@@ -70,4 +78,25 @@ public class Resource {
         }
     }
 
+    public boolean isAuthorized(Request request) {
+        if (request.getHeadersMap().containsKey("Authorization")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isProtected() throws IOException {
+        String parentPath = new File(modifiedUri).getParent();
+        File temp = null;
+        while ((temp = new File(parentPath)).getParent() != null) {
+            if (new File(temp.getAbsolutePath() + File.separator + ".htaccess").exists()) {
+                htaccess = new HtAccess();
+                htaccess.parse(temp.getAbsolutePath());
+                return true;
+            }
+            parentPath = temp.getParent();
+        }
+        return false;
+    }
 }

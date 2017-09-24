@@ -10,30 +10,56 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class ResponseFactory {
 
     public static Response getResponse(Request request, Resource resource) throws IOException, NoSuchAlgorithmException, ParseException, InterruptedException {
 
+//        return new OkResponse(resource);
+
+        if (resource.isProtected()) {
+
+            //2. Unauthorized access : 401
+            if (!resource.isAuthorized(request)) {
+                return new UnauthorizedResponse(resource);
+            }
+
+            //3. Validation failed : 403
+            else if (!resource.getHtAccess().validateUser(request)) {
+                return new ForbiddenAccessReponse(resource);
+            }
+        }
         return new OkResponse(resource);
+
     }
 
-    private static String executeScript(Resource resource, Request request) throws InterruptedException,IOException {
-        List<String> args = getScriptArgs(resource,request);
-        ProcessBuilder pb=new ProcessBuilder(args);
+    private static String executeScript(Resource resource, Request request) throws InterruptedException, IOException {
+        List<String> args = getScriptArgs(resource, request);
+        ProcessBuilder pb = new ProcessBuilder(args);
         setEnvVariables(request, pb);
         Process process = pb.start();
         return output(process.getInputStream());
     }
 
-    private static void setEnvVariables(Request request,ProcessBuilder procBuilder) throws IOException{
-        Map<String,String> envMap = procBuilder.environment();
+    private static void setEnvVariables(Request request, ProcessBuilder procBuilder) throws IOException {
+        Map<String, String> envMap = procBuilder.environment();
         for (String currentHeader : request.getHeadersMap().keySet()) {
             envMap.put("HTTP_" + currentHeader.toUpperCase(), request.getHeadersMap().get(currentHeader));
         }
-        if(!request.getVerb().equals("POST") && request.getQueryString()!= null) {
+        if (!request.getVerb().equals("POST") && request.getQueryString() != null) {
             envMap.put("QUERY_STRING", request.getQueryString());
-        }
-        else if(request.getBody()!= null) {
+        } else if (request.getBody() != null) {
             envMap.put("QUERY_STRING", new String(request.getBody()));
         }
     }
@@ -49,7 +75,7 @@ public class ResponseFactory {
         File scriptFile = new File(modifiedUri);
         String str;
         BufferedReader br = new BufferedReader(new FileReader(scriptFile));
-        if((str = br.readLine()) != null){
+        if ((str = br.readLine()) != null) {
             return str.substring(2).split(" ");
         }
         br.close();

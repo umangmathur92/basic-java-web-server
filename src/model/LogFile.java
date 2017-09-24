@@ -1,17 +1,15 @@
 package model;
 
-// package Logs;
+import model.Request;
+import model.responses.Response;
 
-        import model.Request;
-        import model.responses.Response;
-
-        import java.io.BufferedWriter;
-        import java.io.File;
-        import java.io.FileWriter;
-        import java.io.IOException;
-        import java.net.Socket;
-        import java.text.SimpleDateFormat;
-        import java.util.Date;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class LogFile {
 
