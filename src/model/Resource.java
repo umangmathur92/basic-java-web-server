@@ -4,10 +4,12 @@ import utilities.Util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -70,7 +72,7 @@ public class Resource {
         }
         //append document root path
         if(!modifiedUri.contains(config.getDocumentRoot())) {
-            modifiedUri = config.getDocumentRoot()+ modifiedUri;
+            modifiedUri = config.getDocumentRoot() + modifiedUri;
         }
         //check if file, else append directory index
         if (File.separator.equals(modifiedUri.substring(modifiedUri.length()-1))) {
@@ -79,7 +81,7 @@ public class Resource {
     }
 
     public boolean isExist() {
-        File file=new File(modifiedUri);
+        File file = new File(modifiedUri);
         return file.exists();
     }
 
@@ -94,12 +96,16 @@ public class Resource {
     public boolean isModifiedSince(Request request) throws ParseException {
         String modifiedSinceHeader = request.getHeadersMap().get("If-Modified-Since");
         DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-        Date modifiedSinceDate = formatter.parse(modifiedSinceHeader);
-        Calendar calender = Calendar.getInstance();
-        calender.setTime(modifiedSinceDate);
-        calender.set(Calendar.MILLISECOND, 0);
-        Date lastModified = calender.getTime();
-        return lastModified.after(modifiedSinceDate);
+        Date modifiedSinceDateInHeader = formatter.parse(modifiedSinceHeader);
+        File file = new File(modifiedUri);
+        Date fileLastModifDate = new Date(file.lastModified());
+        return fileLastModifDate.after(modifiedSinceDateInHeader);
+    }
+
+    public byte[] fetchResourceFileData() throws IOException {
+        File resFile = new File(modifiedUri);
+        Path filePath = Paths.get(resFile.getAbsolutePath());
+        return Files.readAllBytes(filePath);
     }
 
 }

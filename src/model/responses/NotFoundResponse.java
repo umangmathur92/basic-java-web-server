@@ -11,7 +11,7 @@ public class NotFoundResponse extends Response {
         super.setHttpStatusCode(404);
         super.setHttpStatus("Not Found");
         super.getHeadersMap().put("Content-Type:",resource.getMimeTypes().lookup("html"));
-        super.setResponseBody(super.fetchFileMetaData(new File("./resources/NotFound.html")));
+        super.setResponseBody(super.fetchFileData(new File("./resources/NotFound.html")));
     }
 
 }

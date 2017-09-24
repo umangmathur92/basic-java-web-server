@@ -1,5 +1,6 @@
 package model.responses;
 
+import model.Resource;
 import utilities.Util;
 
 import java.io.File;
@@ -42,12 +43,23 @@ public class Response {
         this.headersMap = headersMap;
     }
 
-    public void sendResponse(Socket socket) throws IOException{
+    public void sendResponse(Socket socket, Resource resource) throws IOException{
         StringBuilder responseStr = new StringBuilder();
         responseStr.append("HTTP/1.1 ").append(httpStatusCode).append(" ").append(httpStatus).append("\r\n");
         headersMap.put("Date", Util.getFormattedDate(new Date()));
         headersMap.put("Server", "My Server");
         headersMap.put("Connection", "Closed");
+
+        if (resource.isExist()) {
+            byte[] fileContents = resource.fetchResourceFileData();
+
+        }
+
+        headersMap.put("Content-Length", fileContents.length + "");
+        headersMap.put("Last-Modified", Util.getFormattedDate(new Date(resFile.lastModified())));
+        headersMap.put("Cache-Control", "max-age=" + 2000);
+
+
         if(headersMap != null){
             responseStr.append(getHeaderStrFromMap(headersMap));
         }
@@ -64,12 +76,12 @@ public class Response {
         }
     }
 
-    public byte[] fetchFileMetaData(File resFile) throws IOException{
+    public byte[] fetchFileData(File resFile) throws IOException{
         Path filePath = Paths.get(resFile.getAbsolutePath());
         byte[] fileContents = Files.readAllBytes(filePath);
-        headersMap.put("Content-Length", fileContents.length + "");
+        /*headersMap.put("Content-Length", fileContents.length + "");
         headersMap.put("Last-Modified", Util.getFormattedDate(new Date(resFile.lastModified())));
-        headersMap.put("Cache-Control", "max-age=" + 2000);
+        headersMap.put("Cache-Control", "max-age=" + 2000);*/
         return fileContents;
     }
 

@@ -13,7 +13,7 @@ public class OkResponse extends Response {
         String extension = resource.getModifiedUri().substring(resource.getModifiedUri().lastIndexOf(".")+1);
         super.getHeadersMap().put("Content-Type", resource.getMimeTypes().lookup(extension));
         if (shouldSendRespBody) {
-            super.setResponseBody(super.fetchFileMetaData(new File(resource.getModifiedUri())));
+            super.setResponseBody(super.fetchFileData(new File(resource.getModifiedUri())));
         }
     }
 

@@ -16,11 +16,14 @@ public class WebServer {
             ServerSocket serverSocket = new ServerSocket(httpdConf.getListenPort());
             while (true) {
                 Socket socket = serverSocket.accept();
-                ServerWorkerThread serverWorkerThread = new ServerWorkerThread(socket, httpdConf, mimeTypeConf);
-                serverWorkerThread.start();//This causes the 'run()' method to be executed
+                if (socket != null) {
+                    ServerWorkerThread serverWorkerThread = new ServerWorkerThread(socket, httpdConf, mimeTypeConf);
+                    serverWorkerThread.start();//This causes the 'run()' method to be executed
+                }
             }
         } catch (Exception e) {
             Util.print("Exception: " + e.getMessage());
         }
     }
+
 }

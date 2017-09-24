@@ -15,36 +15,29 @@ import static model.Request.*;
 public class ResponseFactory {
 
     public static Response getResponse(Request request, Resource resource) throws Exception {
+        if (!resource.isExist()) {
+            return new NotFoundResponse(resource);
+        }
         String verb = request.getVerb();
         switch (verb) {
             case TYPE_GET:
-                boolean resourceExists = resource.isExist();
-                if (!resourceExists) {
-                    return new NotFoundResponse(resource);
+                if (request.getHeadersMap().containsKey("If-Modified-Since")) {
+                    return resource.isModifiedSince(request) ? new OkResponse(resource, true) : new NotModifiedResponse();
                 }
-                boolean containsFileModifDateHeader = request.getHeadersMap().containsKey("If-Modified-Since");
-                boolean isResourceModified = containsFileModifDateHeader && resource.isModifiedSince(request);
-                return isResourceModified ? new OkResponse(resource, true) : new NotModifiedResponse();
+                return new OkResponse(resource, true);
             case TYPE_PUT:
                 boolean resFileCreated = resource.createFile(request);
                 return resFileCreated ? new CreatedResponse(resource) : new InternalServerErrorResponse();
             case TYPE_POST:
                 return new OkResponse(resource, true);
             case TYPE_DELETE:
-                boolean rescExists = resource.isExist();
-                if (!rescExists) {
-                    return new NotFoundResponse(resource);
-                }
                 boolean deleteFileSuccessfully = resource.deleteFile(request);
-                return deleteFileSuccessfully? new NoContentResponse() : new NotFoundResponse(resource);
+                return deleteFileSuccessfully ? new NoContentResponse() : new NotFoundResponse(resource);
             case TYPE_HEAD:
-                boolean resExists = resource.isExist();
-                if (!resExists) {
-                    return new NotFoundResponse(resource);
+                if (request.getHeadersMap().containsKey("If-Modified-Since")) {
+                    return resource.isModifiedSince(request) ? new OkResponse(resource, false) : new NotModifiedResponse();
                 }
-                boolean hasFileModifDateHeader = request.getHeadersMap().containsKey("If-Modified-Since");
-                boolean isResModified = hasFileModifDateHeader && resource.isModifiedSince(request);
-                return isResModified ? new OkResponse(resource, false) : new NotModifiedResponse();
+                return new OkResponse(resource, false);
             default:
                 return new BadRequestResponse();
         }
