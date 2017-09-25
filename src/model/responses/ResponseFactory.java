@@ -4,10 +4,12 @@ import model.HtAccess;
 import model.HtPassword;
 import model.Request;
 import model.Resource;
+import utilities.Util;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static model.Request.*;
 
@@ -21,7 +23,6 @@ public class ResponseFactory {
             resource.setHtAccess(htAccess);
             String strAuthUserFilePath = htAccess.getAuthUserFile();
             HtPassword htPassword = new HtPassword(strAuthUserFilePath);
-
             if (request.getHeadersMap().containsKey("Authorization")) {
                 String authorization = request.getHeadersMap().get("Authorization");
                 String credentials = new String(Base64.getDecoder().decode(authorization.split(" ")[1]), Charset.forName( "UTF-8" ));
@@ -29,13 +30,23 @@ public class ResponseFactory {
                 String usrName = credentialsTokens[0];
                 String usrPassword = credentialsTokens[1];
                 HashMap<String, String> authorizedAccountsMap = htPassword.getAuthorizedAccountsMap();
-                boolean userAccountValidated = false;
+                boolean hasValidCredentials = false;
                 if (authorizedAccountsMap.containsKey(usrName)) {
-                    userAccountValidated = authorizedAccountsMap.get(usrName).equals(usrPassword);
+                    String uPasswd = authorizedAccountsMap.get(usrName);
+                    String pass = Util.convertToSHA1(usrPassword);
+                    hasValidCredentials = pass.equals(uPasswd);
                 }
-                return userAccountValidated ? new OkResponse(resource, true): new UnauthorizedResponse(resource);
+                if (hasValidCredentials) {
+                    if (!resource.isExist()) {
+                        return new NotFoundResponse(resource);
+                    } else {
+                        return new OkResponse(resource, true);
+                    }
+                } else {
+                    return new ForbiddenAccessReponse(resource);
+                }
             } else {
-                return new ForbiddenAccessReponse(resource);
+                return new UnauthorizedResponse(resource);
             }
         }
 

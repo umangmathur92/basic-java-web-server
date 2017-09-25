@@ -66,34 +66,6 @@ public class HtAccess {
         return require;
     }
 
-    /*public boolean validateUser(Request request) throws IOException, NoSuchAlgorithmException {
-    String[] requestAuthInformation = fetchAuthInformation(request.getHeadersMap().get("Authorization").split(" ")[1]);
-        return fetchPasswordAndCompare(requestAuthInformation, htPassword);
-    }*/
-
-    public String[] fetchAuthInformation(String authHeader) {
-        byte[] base64Decoded = Base64.getDecoder().decode(authHeader);
-        return new String(base64Decoded).split(":");
-    }
-
-    public boolean fetchPasswordAndCompare(String[] userInfo, HtPassword htpassword) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        String userName = userInfo[0];
-        String userPass = userInfo[1];
-        String convertedSHA = convertSHAforPassword(userPass);
-        String base64DecodedStoredPassword = htpassword.getAuthorizedAccountsMap().get(userName);
-        if (base64DecodedStoredPassword != null && base64DecodedStoredPassword.equalsIgnoreCase(convertedSHA)) {
-            return true;
-        }
-        return false;
-    }
-
-    public String convertSHAforPassword(String inputPassword) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        md.update(inputPassword.getBytes("UTF-8"));
-        byte[] digest = md.digest();
-        return new String(Base64.getEncoder().encode(digest));
-    }
-
     public String createWWWAuthHeader() {
         return authType + " " + "realm=" + authName;
     }
