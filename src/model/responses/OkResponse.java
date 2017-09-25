@@ -18,5 +18,4 @@ public class OkResponse extends Response {
             super.setResponseBody(respBytes);
         }
     }
-
 }

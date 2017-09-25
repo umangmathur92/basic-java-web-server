@@ -4,12 +4,11 @@ import model.Request;
 import model.Resource;
 
 import java.io.*;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.util.Arrays;
+
+import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
-
 
 import static model.Request.*;
 
@@ -18,19 +17,22 @@ public class ResponseFactory {
     public static Response getResponse(Request request, Resource resource) throws Exception {
         String verb = request.getVerb();
 
-        if (resource.isProtected()) {
+//        if (resource.isProtected()) {
+//
+//            //2. Unauthorized access : 401
+//            if (!resource.isAuthorized(request)) {
+//                return new UnauthorizedResponse(resource);
+//            }
+//
+//            //3. Validation failed : 403
+//            else if (!resource.getHtAccess().validateUser(request)) {
+//                return new ForbiddenAccessResponse(resource);
+//            }
+//        }
 
-            //2. Unauthorized access : 401
-            if (!resource.isAuthorized(request)) {
-                return new UnauthorizedResponse(resource);
-            }
-
-            //3. Validation failed : 403
-            else if (!resource.getHtAccess().validateUser(request)) {
-                return new ForbiddenAccessReponse(resource);
-            }
+        if(resource.isScript()){
+            return new ScriptOkResponse(executeScript(resource,request));
         }
-
         switch (verb) {
             case TYPE_GET:
                 if (!resource.isExist()) {
@@ -68,7 +70,10 @@ public class ResponseFactory {
     }
 
     private static String executeScript(Resource resource, Request request) throws InterruptedException, IOException {
-        List<String> args = getScriptArgs(resource, request);
+
+        List<String> args = new ArrayList<>();
+
+        args = getScriptArgs(resource, request);
         ProcessBuilder pb = new ProcessBuilder(args);
         setEnvVariables(request, pb);
         Process process = pb.start();
@@ -80,16 +85,28 @@ public class ResponseFactory {
         for (String currentHeader : request.getHeadersMap().keySet()) {
             envMap.put("HTTP_" + currentHeader.toUpperCase(), request.getHeadersMap().get(currentHeader));
         }
-        if (!request.getVerb().equals("POST") && request.getQueryString() != null) {
-            envMap.put("QUERY_STRING", request.getQueryString());
-        } else if (request.getBody() != null) {
-            envMap.put("QUERY_STRING", new String(request.getBody()));
+
+        if (!request.getVerb().equals("POST")) {
+            if (request.getQueryString() != null) {
+                envMap.put("QUERY_STRING", request.getQueryString());
+            }
+        }
+
+        else {
+            if (request.getBody() != null) {
+                envMap.put("QUERY_STRING", new String (request.getBody()));
+            }
         }
     }
 
     private static List<String> getScriptArgs(Resource resource, Request request) throws IOException {
         String[] command = readFileType(resource.getModifiedUri());
-        List<String> args = Arrays.asList(command);
+//        List<String> args = Arrays.asList(command);
+
+        List<String> args = new ArrayList<>();
+        for (int i = 0; i < command.length; i++) {
+            args.add(command[i]);
+        }
         args.add(resource.getModifiedUri());
         return args;
     }
@@ -119,5 +136,4 @@ public class ResponseFactory {
         }
         return str.toString();
     }
-
 }

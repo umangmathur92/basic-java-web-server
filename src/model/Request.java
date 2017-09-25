@@ -64,7 +64,7 @@ public class Request {
             }
             this.body = buf.toByteArray();
             Util.print(new String(body));
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

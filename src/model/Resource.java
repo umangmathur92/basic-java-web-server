@@ -20,6 +20,7 @@ public class Resource {
     private HttpdConf httpdConf;
     private MimeTypes mimeTypes;
     private HtAccess htaccess;
+    private boolean isScript;
 
     public String getModifiedUri() {
         return modifiedUri;
@@ -75,6 +76,7 @@ public class Resource {
             if (uri.contains(scriptAliasKey)) {
                 String actualScriptPath = scriptAliasesMap.get(scriptAliasKey);
                 modifiedUri = uri.replace(scriptAliasKey, actualScriptPath);
+                isScript = true;
             }
         }
         //append document root path
@@ -137,4 +139,11 @@ public class Resource {
         return Files.readAllBytes(filePath);
     }
 
+    public boolean isScript() {
+        return isScript;
+    }
+
+    public void setScript(boolean script) {
+        isScript = script;
+    }
 }
