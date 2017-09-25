@@ -5,19 +5,28 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Base64;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
+import java.util.LinkedHashMap;
+import java.util.regex.Pattern;
 
 public class HtPassword {
 
-    private HashMap<String, String> Logins = new HashMap<>();
+    private HashMap<String, String> authorizedAccountsMap = new LinkedHashMap<>();
 
-//    public HtPassword(String filePathStr) throws IOException {
+    public HtPassword(String strFilePath) throws IOException {
+        String content = new String(Files.readAllBytes(Paths.get(strFilePath)));
+        String[] contentLinesArray = content.split("\n");
+        for (String individualLineStr : contentLinesArray) {
+            String[] tokens = individualLineStr.split(":");
+            authorizedAccountsMap.put(tokens[0].trim(), tokens[1].replaceAll(Pattern.quote("{SHA1}"),"").trim());
+        }
+        //jrob:{SHA}W6ph5Mm5Pz8GgiULbPgzG37mj9g=
+    }
+
+    //    public HtPassword(String filePathStr) throws IOException {
 //        Path filePath = Paths.get(filePathStr);
 //        System.out.println("Password file: " + filePathStr);
 //
@@ -25,12 +34,12 @@ public class HtPassword {
 //        parse(loginsConfStr);
 //    }
 
-    public HashMap<String, String> getLogins() {
-        return Logins;
+    public HashMap<String, String> getAuthorizedAccountsMap() {
+        return authorizedAccountsMap;
     }
 
-    public void setLogins(HashMap<String, String> Logins) {
-        this.Logins = Logins;
+    public void setAuthorizedAccountsMap(HashMap<String, String> Logins) {
+        this.authorizedAccountsMap = Logins;
     }
 
     //        protected void parse(String loginsConfStr) throws IOException {
@@ -39,7 +48,7 @@ public class HtPassword {
         String str = null;
         while ((str = br.readLine()) != null) {
             String[] tokens = str.split(":");
-            Logins.put(tokens[0], tokens[1].replace("{SHA}", "").trim());
+            authorizedAccountsMap.put(tokens[0], tokens[1].replace("{SHA}", "").trim());
         }
         br.close();
     }

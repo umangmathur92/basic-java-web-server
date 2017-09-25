@@ -1,15 +1,13 @@
 package model.responses;
 
+import model.HtAccess;
+import model.HtPassword;
 import model.Request;
 import model.Resource;
 
 import java.io.*;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import java.nio.charset.Charset;
+import java.util.*;
 
 import static model.Request.*;
 
@@ -17,16 +15,26 @@ public class ResponseFactory {
 
     public static Response getResponse(Request request, Resource resource) throws Exception {
         String verb = request.getVerb();
-
         if (resource.isProtected()) {
+            File resDirectory = new File(resource.getModifiedUri()).getParentFile();
+            HtAccess htAccess = new HtAccess(resDirectory.getAbsolutePath() + File.separator + resource.getHttpdConf().getAccessFileName());
+            resource.setHtAccess(htAccess);
+            String strAuthUserFilePath = htAccess.getAuthUserFile();
+            HtPassword htPassword = new HtPassword(strAuthUserFilePath);
 
-            //2. Unauthorized access : 401
-            if (!resource.isAuthorized(request)) {
-                return new UnauthorizedResponse(resource);
-            }
-
-            //3. Validation failed : 403
-            else if (!resource.getHtAccess().validateUser(request)) {
+            if (request.getHeadersMap().containsKey("Authorization")) {
+                String authorization = request.getHeadersMap().get("Authorization");
+                String credentials = new String(Base64.getDecoder().decode(authorization.split(" ")[1]), Charset.forName( "UTF-8" ));
+                String[] credentialsTokens = credentials.split(":");
+                String usrName = credentialsTokens[0];
+                String usrPassword = credentialsTokens[1];
+                HashMap<String, String> authorizedAccountsMap = htPassword.getAuthorizedAccountsMap();
+                boolean userAccountValidated = false;
+                if (authorizedAccountsMap.containsKey(usrName)) {
+                    userAccountValidated = authorizedAccountsMap.get(usrName).equals(usrPassword);
+                }
+                return userAccountValidated ? new OkResponse(resource, true): new UnauthorizedResponse(resource);
+            } else {
                 return new ForbiddenAccessReponse(resource);
             }
         }

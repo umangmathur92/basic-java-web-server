@@ -3,13 +3,16 @@ package model;
 import utilities.Util;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -87,26 +90,25 @@ public class Resource {
         }
     }
 
-    public boolean isAuthorized(Request request) {
+   /* public boolean isAuthorized(Request request) {
         if (request.getHeadersMap().containsKey("Authorization")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+            String authInfo = request.getHeadersMap().get("Authorization");
+            String credentials = new String(Base64.getDecoder().decode(authInfo), Charset.forName( "UTF-8" ));
+            // The string is the key:value pair username:password
+            String[] tokens = credentials.split( ":" );
 
-    public boolean isProtected() throws IOException {
-        String parentPath = new File(modifiedUri).getParent();
-        File temp = null;
-        while ((temp = new File(parentPath)).getParent() != null) {
-            if (new File(temp.getAbsolutePath() + File.separator + ".htaccess").exists()) {
-                htaccess = new HtAccess();
-                htaccess.parse(temp.getAbsolutePath());
-                return true;
-            }
-            parentPath = temp.getParent();
         }
-        return false;
+
+
+    }
+*/
+    public boolean isProtected() throws IOException {
+        File resourceFile = new File(modifiedUri);
+        File parentDir = resourceFile.getParentFile();
+        File[] filesWithMatchingNames = parentDir
+                .listFiles((dir, name) -> httpdConf.getAccessFileName()
+                .equals(name));
+        return filesWithMatchingNames.length > 0;
     }
 
     public boolean isExist() {

@@ -10,6 +10,6 @@ public class ForbiddenAccessReponse extends Response {
         super.setHttpStatusCode(403);
         super.setHttpStatus("Forbidden");
         super.getHeadersMap().put("Content-Type", resource.getMimeTypes().lookup("html"));
-        super.setResponseBody(super.fetchFileMetaData(new File("./resources/Forbidden.html")));
+        super.setResponseBody(super.fetchFileData(new File("./resources/Forbidden.html")));
     }
 }

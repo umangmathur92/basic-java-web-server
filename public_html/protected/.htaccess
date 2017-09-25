@@ -1,0 +1,4 @@
+AuthUserFile "/home/umangmathur/repositories/web-server-umangmathur_vipulkaranjkar/public_html/.htpassword"
+AuthType Basic
+AuthName "I Challenge You"
+Require valid-user
