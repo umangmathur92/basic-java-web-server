@@ -11,7 +11,12 @@ public class HtPassword {
 
     private HashMap<String, String> authorizedAccountsMap = new LinkedHashMap<>();
 
-    public HtPassword(String strFilePath) throws IOException {
+    public HtPassword(HtAccess htAccess) throws IOException {
+        String authUserFilePath = htAccess.getAuthUserFile();
+        parseAndLoad(authUserFilePath);
+    }
+
+    private void parseAndLoad(String strFilePath) throws IOException {
         String content = new String(Files.readAllBytes(Paths.get(strFilePath)));
         String[] contentLinesArray = content.split("\n");
         for (String individualLineStr : contentLinesArray) {

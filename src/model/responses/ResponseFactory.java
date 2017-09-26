@@ -8,8 +8,8 @@ import utilities.Util;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 import static model.Request.*;
 
@@ -18,30 +18,12 @@ public class ResponseFactory {
     public static Response getResponse(Request request, Resource resource) throws Exception {
         String verb = request.getVerb();
         if (resource.isProtected()) {
-            File resDirectory = new File(resource.getModifiedUri()).getParentFile();
-            HtAccess htAccess = new HtAccess(resDirectory.getAbsolutePath() + File.separator + resource.getHttpdConf().getAccessFileName());
+            HtAccess htAccess = new HtAccess(resource);
             resource.setHtAccess(htAccess);
-            String strAuthUserFilePath = htAccess.getAuthUserFile();
-            HtPassword htPassword = new HtPassword(strAuthUserFilePath);
             if (request.getHeadersMap().containsKey("Authorization")) {
-                String authorization = request.getHeadersMap().get("Authorization");
-                String credentials = new String(Base64.getDecoder().decode(authorization.split(" ")[1]), Charset.forName( "UTF-8" ));
-                String[] credentialsTokens = credentials.split(":");
-                String usrName = credentialsTokens[0];
-                String usrPassword = credentialsTokens[1];
-                HashMap<String, String> authorizedAccountsMap = htPassword.getAuthorizedAccountsMap();
-                boolean hasValidCredentials = false;
-                if (authorizedAccountsMap.containsKey(usrName)) {
-                    String uPasswd = authorizedAccountsMap.get(usrName);
-                    String pass = Util.convertToSHA1(usrPassword);
-                    hasValidCredentials = pass.equals(uPasswd);
-                }
+                boolean hasValidCredentials = checkLoginCredentials(request, resource);
                 if (hasValidCredentials) {
-                    if (!resource.isExist()) {
-                        return new NotFoundResponse(resource);
-                    } else {
-                        return new OkResponse(resource, true);
-                    }
+                    return resource.isExist() ? new OkResponse(resource, true) : new NotFoundResponse(resource);
                 } else {
                     return new ForbiddenAccessReponse(resource);
                 }
@@ -49,7 +31,6 @@ public class ResponseFactory {
                 return new UnauthorizedResponse(resource);
             }
         }
-
         switch (verb) {
             case TYPE_GET:
                 if (!resource.isExist()) {
@@ -84,6 +65,30 @@ public class ResponseFactory {
             default:
                 return new BadRequestResponse();
         }
+    }
+
+    private static boolean checkLoginCredentials(Request request, Resource resource) throws IOException, NoSuchAlgorithmException {
+        String authorizationStr = request.getHeadersMap().get("Authorization");
+        String[] credentialsTokens = getDecodedInputCredentials(authorizationStr);
+        String inputUsrName = credentialsTokens[0].trim();
+        String inputUsrPass = Util.convertToSHA1Base64Encoding(credentialsTokens[1].trim());
+        HtPassword htPassword = new HtPassword(resource.getHtAccess());
+        return compareInputCredentialsWithHtPassword(htPassword, inputUsrName, inputUsrPass);
+    }
+
+    private static boolean compareInputCredentialsWithHtPassword(HtPassword htPassword, String inputUsrName, String inputUsrPass) {
+        HashMap<String, String> authorizedAccountsMap = htPassword.getAuthorizedAccountsMap();
+        if (htPassword.getAuthorizedAccountsMap().containsKey(inputUsrName)) {
+            String validPassword = authorizedAccountsMap.get(inputUsrName);
+            return inputUsrPass.equals(validPassword);
+        }
+        return false;
+    }
+
+    private static String[] getDecodedInputCredentials(String authorizationStr) {
+        String src = authorizationStr.split(" ")[1];
+        String decodedCredentialsStr = new String(Base64.getDecoder().decode(src), Charset.forName( "UTF-8" ));
+        return decodedCredentialsStr.split(":");
     }
 
     private static String executeScript(Resource resource, Request request) throws InterruptedException, IOException {

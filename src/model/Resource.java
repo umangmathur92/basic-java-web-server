@@ -90,25 +90,13 @@ public class Resource {
         }
     }
 
-   /* public boolean isAuthorized(Request request) {
-        if (request.getHeadersMap().containsKey("Authorization")) {
-            String authInfo = request.getHeadersMap().get("Authorization");
-            String credentials = new String(Base64.getDecoder().decode(authInfo), Charset.forName( "UTF-8" ));
-            // The string is the key:value pair username:password
-            String[] tokens = credentials.split( ":" );
-
-        }
-
-
-    }
-*/
     public boolean isProtected() throws IOException {
         File resourceFile = new File(modifiedUri);
         File parentDir = resourceFile.getParentFile();
         File[] filesWithMatchingNames = parentDir
                 .listFiles((dir, name) -> httpdConf.getAccessFileName()
                 .equals(name));
-        return filesWithMatchingNames.length > 0;
+        return filesWithMatchingNames != null && filesWithMatchingNames.length > 0;
     }
 
     public boolean isExist() {

@@ -42,12 +42,12 @@ public class Util {
 
     public static boolean createFile(String fileUriStr, byte[] fileContentByteArr) throws IOException {
         File file = new File(fileUriStr);
-        /*if (!file.getParentFile().exists()) {
+        if (!file.getParentFile().exists()) {
             boolean parentDirCreated = file.getParentFile().mkdir();
             if (!parentDirCreated) {
                 return false;
             }
-        }*/
+        }
         if(!file.exists()){
             boolean newFileCreated = file.createNewFile();
             if (!newFileCreated) {
@@ -68,12 +68,11 @@ public class Util {
         return file.delete();
     }
 
-    public static String convertToSHA1(String inputPassword) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String convertToSHA1Base64Encoding(String inputStr) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest md = MessageDigest.getInstance("SHA-1");
-        md.update(inputPassword.getBytes("UTF-8"));
+        md.update(inputStr.getBytes("UTF-8"));
         byte[] digest = md.digest();
         return new String(Base64.getEncoder().encode(digest));
-
     }
 
 }
