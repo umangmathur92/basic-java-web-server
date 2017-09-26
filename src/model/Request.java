@@ -34,37 +34,39 @@ public class Request {
 
     public Request(Socket socket) {
         try {
-            BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
-            String firstLine = Util.readRawLineToStr(in);
-            Util.print(firstLine);
-            String[] variables = firstLine.split(" ");
-            this.verb = variables[0];
-            this.uri = variables[1];
-            this.httpVersion = variables[2];
-            if (uri.contains("?")) {
-                this.uri = variables[1].substring(0, variables[1].indexOf("?"));
-                this.queryString = variables[1].substring(variables[1].indexOf("?") + 1);
-            }
-            String str = Util.readRawLineToStr(in);
-            Util.print(str);
-            while (str.length() > 0) {
-                String[] keyValStrArr = str.split(": ");
-                String key = keyValStrArr[0].trim();
-                String value = keyValStrArr[1].trim();
-                this.headersMap.put(key, value);
-                str = Util.readRawLineToStr(in);
-                Util.print(str);
-            }
-            ByteArrayOutputStream buf = new ByteArrayOutputStream();
-            String contentLength;
-            if ((contentLength = headersMap.get("Content-Length")) != null) {
-                for (int i = 0; i < Integer.parseInt(contentLength); i++) {
-                    buf.write(in.read());
+            if (socket != null) {
+                BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
+                String firstLine = Util.readRawLineToStr(in);
+                Util.print(firstLine);
+                String[] variables = firstLine.split(" ");
+                this.verb = variables[0];
+                this.uri = variables[1];
+                this.httpVersion = variables[2];
+                if (uri.contains("?")) {
+                    this.uri = variables[1].substring(0, variables[1].indexOf("?"));
+                    this.queryString = variables[1].substring(variables[1].indexOf("?") + 1);
                 }
+                String str = Util.readRawLineToStr(in);
+                Util.print(str);
+                while (str.length() > 0) {
+                    String[] keyValStrArr = str.split(": ");
+                    String key = keyValStrArr[0].trim();
+                    String value = keyValStrArr[1].trim();
+                    this.headersMap.put(key, value);
+                    str = Util.readRawLineToStr(in);
+                    Util.print(str);
+                }
+                ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                String contentLength;
+                if ((contentLength = headersMap.get("Content-Length")) != null) {
+                    for (int i = 0; i < Integer.parseInt(contentLength); i++) {
+                        buf.write(in.read());
+                    }
+                }
+                this.body = buf.toByteArray();
+                Util.print(new String(body));
             }
-            this.body = buf.toByteArray();
-            Util.print(new String(body));
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
         }
     }

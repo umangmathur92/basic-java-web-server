@@ -2,8 +2,11 @@ package utilities;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 
 public class Util {
@@ -39,12 +42,12 @@ public class Util {
 
     public static boolean createFile(String fileUriStr, byte[] fileContentByteArr) throws IOException {
         File file = new File(fileUriStr);
-        /*if (!file.getParentFile().exists()) {
+        if (!file.getParentFile().exists()) {
             boolean parentDirCreated = file.getParentFile().mkdir();
             if (!parentDirCreated) {
                 return false;
             }
-        }*/
+        }
         if(!file.exists()){
             boolean newFileCreated = file.createNewFile();
             if (!newFileCreated) {
@@ -63,6 +66,13 @@ public class Util {
             return false;
         }
         return file.delete();
+    }
+
+    public static String convertToSHA1Base64Encoding(String inputStr) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        md.update(inputStr.getBytes("UTF-8"));
+        byte[] digest = md.digest();
+        return new String(Base64.getEncoder().encode(digest));
     }
 
 }

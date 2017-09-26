@@ -1,4 +1,0 @@
-AuthUserFile "/Users/vipulkaranjkar/IdeaProjects/web-server-umangmathur_vipulkaranjkar/public_html/.htpassword"
-AuthType Basic
-AuthName "I Challenge You"
-Require valid-user
