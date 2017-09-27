@@ -13,31 +13,31 @@ import java.net.Socket;
 
 public class ServerWorkerThread extends Thread {
 
-    private Socket socket;
-    private HttpdConf httpdConf;
-    private MimeTypes mimeTypeConf;
+  private Socket socket;
+  private HttpdConf httpdConf;
+  private MimeTypes mimeTypeConf;
 
-    public ServerWorkerThread(Socket socket, HttpdConf httpdConf, MimeTypes mimeTypeConf) {
-        this.socket = socket;
-        this.httpdConf = httpdConf;
-        this.mimeTypeConf = mimeTypeConf;
-    }
+  public ServerWorkerThread(Socket socket, HttpdConf httpdConf, MimeTypes mimeTypeConf) {
+    this.socket = socket;
+    this.httpdConf = httpdConf;
+    this.mimeTypeConf = mimeTypeConf;
+  }
 
-    @Override
-    public void run() {
-        try {
-            if (socket != null) {
-                Request request = new Request(socket);
-                Util.print(request.toString());
-                Resource resource = new Resource(request.getUri(), httpdConf, mimeTypeConf);
-                Response response = ResponseFactory.getResponse(request, resource);
-                response.sendResponse(socket, resource);
-                LogFile logFile = new LogFile(httpdConf.getLogFile());
-                logFile.write(request, response, socket);
-                socket.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+  @Override
+  public void run() {
+    try {
+      if (socket != null) {
+        Request request = new Request(socket);
+        Util.print(request.toString());
+        Resource resource = new Resource(request.getUri(), httpdConf, mimeTypeConf);
+        Response response = ResponseFactory.getResponse(request, resource);
+        response.sendResponse(socket, resource);
+        LogFile logFile = new LogFile(httpdConf.getLogFile());
+        logFile.write(request, response, socket);
+        socket.close();
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 }
