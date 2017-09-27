@@ -115,14 +115,16 @@ public class ResponseFactory {
     }
 
     private static List<String> getScriptArgs(Resource resource, Request request) throws IOException {
-        String[] command = readScriptFileType(resource.getModifiedUri());
+        String[] str = readScriptFile(resource.getModifiedUri());
         List<String> scriptArgs = new ArrayList<>();
-        scriptArgs.addAll(Arrays.asList(command));
+        if (str != null) {
+            scriptArgs.addAll(Arrays.asList(str));
+        }
         scriptArgs.add(resource.getModifiedUri());
         return scriptArgs;
     }
 
-    private static String[] readScriptFileType(String modifiedUri) throws IOException {
+    private static String[] readScriptFile(String modifiedUri) throws IOException {
         File scriptFile = new File(modifiedUri);
         String str;
         BufferedReader br = new BufferedReader(new FileReader(scriptFile));

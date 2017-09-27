@@ -1,12 +1,8 @@
 package server;
 
-import model.HttpdConf;
-import model.MimeTypes;
-import model.Resource;
-import model.Request;
+import model.*;
 import model.responses.Response;
 import model.responses.ResponseFactory;
-import model.LogFile;
 import utilities.Util;
 
 import java.net.Socket;

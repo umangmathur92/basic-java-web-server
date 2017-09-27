@@ -47,10 +47,10 @@ public class Response {
         StringBuilder responseStr = new StringBuilder();
         responseStr.append("HTTP/1.1 ").append(httpStatusCode).append(" ").append(httpStatus).append("\r\n");
         headersMap.put("Date", Util.getFormattedDate(new Date()));
-        headersMap.put("Server", "My Server");
+        headersMap.put("Server", "web-server-umangmathur_vipulkaranjkar");
         headersMap.put("Connection", "Closed");
-        headersMap.put("Cache-Control", "max-age=" + 2000);
-        if(headersMap != null){
+        headersMap.put("Cache-Control", "max-age=" + 3600);
+        if(headersMap != null) {
             responseStr.append(getHeaderStrFromMap(headersMap));
         }
         responseStr.append("\r\n");

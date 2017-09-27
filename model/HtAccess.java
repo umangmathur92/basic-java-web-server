@@ -74,7 +74,7 @@ public class HtAccess {
         return require;
     }
 
-    public String createWWWAuthHeader() {
+    public String getWWWAuthHeaderValue() {
         return authType + " realm=" + authName;
     }
 
