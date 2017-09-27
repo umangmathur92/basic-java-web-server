@@ -1,4 +1,4 @@
-package model.responses;
+package javasource.responses;
 
 
 public class ScriptOkResponse extends Response {

@@ -1,4 +1,6 @@
-package model;
+package javasource.security;
+
+import javasource.resources.Resource;
 
 import java.io.File;
 import java.io.IOException;

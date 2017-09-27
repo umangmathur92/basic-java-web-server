@@ -1,7 +1,7 @@
-package model.responses;
+package javasource.responses;
 
-import model.Resource;
-import utilities.Util;
+import javasource.resources.Resource;
+import javasource.utilities.Util;
 
 import java.io.File;
 import java.io.IOException;

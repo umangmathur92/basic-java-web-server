@@ -1,9 +1,13 @@
-package server;
+package javasource.server;
 
-import model.*;
-import model.responses.Response;
-import model.responses.ResponseFactory;
-import utilities.Util;
+import javasource.configuration.HttpdConf;
+import javasource.configuration.MimeTypes;
+import javasource.logging.LogFile;
+import javasource.request.Request;
+import javasource.resources.Resource;
+import javasource.responses.Response;
+import javasource.responses.ResponseFactory;
+import javasource.utilities.Util;
 
 import java.net.Socket;
 

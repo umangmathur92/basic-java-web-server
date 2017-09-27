@@ -1,7 +1,8 @@
-package model;
+package javasource.logging;
 
-import model.responses.Response;
-import utilities.Util;
+import javasource.request.Request;
+import javasource.responses.Response;
+import javasource.utilities.Util;
 
 import java.io.BufferedWriter;
 import java.io.File;

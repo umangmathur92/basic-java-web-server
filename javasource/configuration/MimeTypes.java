@@ -1,4 +1,4 @@
-package model;
+package javasource.configuration;
 
 import java.io.IOException;
 import java.nio.file.Files;

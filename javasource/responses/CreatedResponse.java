@@ -1,6 +1,6 @@
-package model.responses;
+package javasource.responses;
 
-import model.Resource;
+import javasource.resources.Resource;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

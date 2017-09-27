@@ -1,4 +1,6 @@
-package model;
+package javasource.security;
+
+import javasource.security.HtAccess;
 
 import java.io.IOException;
 import java.nio.file.Files;

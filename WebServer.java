@@ -1,7 +1,7 @@
-import model.HttpdConf;
-import model.MimeTypes;
-import server.ServerWorkerThread;
-import utilities.Util;
+import javasource.configuration.HttpdConf;
+import javasource.configuration.MimeTypes;
+import javasource.server.ServerWorkerThread;
+import javasource.utilities.Util;
 
 import java.io.File;
 import java.net.ServerSocket;

@@ -1,6 +1,6 @@
-package model;
+package javasource.request;
 
-import utilities.Util;
+import javasource.utilities.Util;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;

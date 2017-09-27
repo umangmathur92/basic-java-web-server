@@ -1,17 +1,17 @@
-package model.responses;
+package javasource.responses;
 
-import model.HtAccess;
-import model.HtPassword;
-import model.Request;
-import model.Resource;
-import utilities.Util;
+import javasource.security.HtAccess;
+import javasource.security.HtPassword;
+import javasource.request.Request;
+import javasource.resources.Resource;
+import javasource.utilities.Util;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-import static model.Request.*;
+import static javasource.request.Request.*;
 
 public class ResponseFactory {
 

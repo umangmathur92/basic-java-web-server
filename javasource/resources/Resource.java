@@ -1,18 +1,19 @@
-package model;
+package javasource.resources;
 
-import utilities.Util;
+import javasource.configuration.HttpdConf;
+import javasource.configuration.MimeTypes;
+import javasource.request.Request;
+import javasource.security.HtAccess;
+import javasource.utilities.Util;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 
